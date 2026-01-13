@@ -16,6 +16,8 @@ import currentComboTextImg from "@/assets/texts/current-combo.png"
 
 import useSocket from "@/hooks/useSocket"
 
+import UnoCard from "@/components/UnoCard"
+
 type CardStackProps = {
 	cards: CardData[]
 	game: Game
@@ -23,7 +25,7 @@ type CardStackProps = {
 
 let lastAmountToBuy = 0
 
-const MAX_CARDS_VISIBLE_ON_CARD_STACK = 5
+const MAX_CARDS_VISIBLE_ON_CARD_STACK = 1
 
 const CardStack: React.FC<CardStackProps> = (props) => {
 	const cardStore = useCardStore()
@@ -134,48 +136,45 @@ const CardStack: React.FC<CardStackProps> = (props) => {
 					container
 					className={classes.cardStackContent}
 				>
-					{cards?.slice(0, MAX_CARDS_VISIBLE_ON_CARD_STACK)?.map((card, index) => (
-						<div
-							key={card.id}
-							style={{
-								position: "relative",
-								display: "inline-block",
-							}}
-						>
-							<img
-								className={classes.card}
-								alt={card.name}
-								src={card.src}
+					{cards?.slice(0, MAX_CARDS_VISIBLE_ON_CARD_STACK)?.map((card, index) => {
+						const isNumberCard = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(card.type)
+
+						return (
+							<div
+								key={card.id}
 								style={{
-									transform: `rotate(${index * (-4)}deg)`,
-									zIndex: MAX_CARDS_VISIBLE_ON_CARD_STACK - index,
-									filter: (index === 0) ? "saturate(1.5)" : "contrast(0.5)",
+									position: "relative",
+									display: "inline-block",
 								}}
-							/>
-							{card.word && index === 0 && (
-								<div
-									style={{
-										position: "absolute",
-										top: "50%",
-										left: "50%",
-										transform: "translate(-50%, -50%)",
-										fontSize: card.word.length > 5 ? "20px" : "28px",
-										fontWeight: "bold",
-										color: "#fff",
-										textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
-										pointerEvents: "none",
-										textAlign: "center",
-										maxWidth: "80%",
-										wordWrap: "break-word",
-										lineHeight: card.word.length > 5 ? "1.2" : "1",
-										zIndex: MAX_CARDS_VISIBLE_ON_CARD_STACK + 1,
-									}}
-								>
-									{card.word}
-								</div>
-							)}
-						</div>
-					))}
+							>
+								{isNumberCard && card.word && index === 0 ? (
+									<UnoCard
+										color={card.color}
+										type={card.type}
+										word={card.word}
+										className={classes.card}
+										style={{
+											transform: `rotate(${index * (-4)}deg)`,
+											zIndex: MAX_CARDS_VISIBLE_ON_CARD_STACK - index,
+											filter: (index === 0) ? "saturate(1.5)" : "contrast(0.5)",
+										}}
+										alt={card.name}
+									/>
+								) : (
+									<img
+										className={classes.card}
+										alt={card.name}
+										src={card.src}
+										style={{
+											transform: `rotate(${index * (-4)}deg)`,
+											zIndex: MAX_CARDS_VISIBLE_ON_CARD_STACK - index,
+											filter: (index === 0) ? "saturate(1.5)" : "contrast(0.5)",
+										}}
+									/>
+								)}
+							</div>
+						)
+					})}
 				</Grid>
 			</Grid>
 		</>

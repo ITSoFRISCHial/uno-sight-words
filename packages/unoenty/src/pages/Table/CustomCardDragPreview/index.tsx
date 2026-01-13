@@ -7,6 +7,8 @@ import useStyles from "@/pages/Table/CustomCardDragPreview/styles"
 
 import { useCardStore } from "@/store/Card"
 
+import UnoCard from "@/components/UnoCard"
+
 const CustomCardDragPreview: React.FC = () => {
 	const {
 		itemType,
@@ -52,76 +54,71 @@ const CustomCardDragPreview: React.FC = () => {
             cardStore?.selectedCards?.length &&
             cardStore?.selectedCards?.every(card => card.type === item.cardType) ? (
 							<>
-								{cardStore?.selectedCards?.map((card, index) => (
-									<div
-										key={index}
-										style={{
-											position: "relative",
-											left: +index * 20,
-										}}
-									>
-										<img
-											alt={card.name}
-											src={card.src}
-											className={item.className}
+								{cardStore?.selectedCards?.map((card, index) => {
+									const isNumberCard = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(card.type)
+
+									return (
+										<div
+											key={index}
 											style={{
-												filter: "saturate(1.5)",
-												position: "absolute",
+												position: "relative",
+												left: +index * 20,
 											}}
-										/>
-										{card.word && (
-											<div
-												style={{
-													position: "absolute",
-													top: "50%",
-													left: "50%",
-													transform: "translate(-50%, -50%)",
-													fontSize: card.word.length > 5 ? "20px" : "28px",
-													fontWeight: "bold",
-													color: "#fff",
-													textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
-													pointerEvents: "none",
-													textAlign: "center",
-													maxWidth: "80%",
-													wordWrap: "break-word",
-													lineHeight: card.word.length > 5 ? "1.2" : "1",
-												}}
-											>
-												{card.word}
-											</div>
-										)}
-									</div>
-								))}
+										>
+											{isNumberCard && card.word ? (
+												<UnoCard
+													color={card.color}
+													type={card.type}
+													word={card.word}
+													className={item.className}
+													style={{
+														filter: "saturate(1.5)",
+														position: "absolute",
+													}}
+													alt={card.name}
+												/>
+											) : (
+												<img
+													alt={card.name}
+													src={card.src}
+													className={item.className}
+													style={{
+														filter: "saturate(1.5)",
+														position: "absolute",
+													}}
+												/>
+											)}
+										</div>
+									)
+								})}
 							</>
 						) : (
 							<div style={{ position: "relative", display: "inline-block" }}>
-								<img
-									alt={item.name}
-									src={item.src}
-									className={item.className}
-									style={{ filter: "saturate(1.5)" }}
-								/>
-								{cardStore?.selectedCards?.find(c => c.id === item.id)?.word && (
-									<div
-										style={{
-											position: "absolute",
-											top: "50%",
-											left: "50%",
-											transform: "translate(-50%, -50%)",
-											fontSize: cardStore?.selectedCards?.find(c => c.id === item.id)?.word.length > 5 ? "20px" : "28px",
-											fontWeight: "bold",
-											color: "#fff",
-											textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
-											pointerEvents: "none",
-											textAlign: "center",
-											maxWidth: "80%",
-											wordWrap: "break-word",
-											lineHeight: cardStore?.selectedCards?.find(c => c.id === item.id)?.word.length > 5 ? "1.2" : "1",
-										}}
-									>
-										{cardStore?.selectedCards?.find(c => c.id === item.id)?.word}
-									</div>
-								)}
+								{(() => {
+									const isNumberCard = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(item.cardType)
+
+									if (isNumberCard && item.word) {
+										return (
+											<UnoCard
+												color={item.color}
+												type={item.cardType}
+												word={item.word}
+												className={item.className}
+												style={{ filter: "saturate(1.5)" }}
+												alt={item.name}
+											/>
+										)
+									}
+
+									return (
+										<img
+											alt={item.name}
+											src={item.src}
+											className={item.className}
+											style={{ filter: "saturate(1.5)" }}
+										/>
+									)
+								})()}
 							</div>
 						)}
 				</div>

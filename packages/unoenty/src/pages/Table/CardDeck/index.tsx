@@ -16,8 +16,9 @@ import { useSocketStore } from "@/store/Socket"
 import useSocket from "@/hooks/useSocket"
 
 import { Divider, Avatar } from "@/components"
+import UnoCard from "@/components/UnoCard"
 
-import { PlayerData, CardData, CardTypes, Game } from "@uno-game/protocols"
+import { PlayerData, CardData, CardTypes, CardColors, Game } from "@uno-game/protocols"
 
 import useStyles from "@/pages/Table/CardDeck/styles"
 import useCustomStyles from "@/styles/custom"
@@ -39,6 +40,8 @@ export type DraggedCardItem = {
 	cardType: CardTypes
 	selected: boolean
 	className: string
+	color: CardColors
+	word?: string
 }
 
 type CardProps = {
@@ -82,6 +85,8 @@ const DraggableCard: React.FC<CardProps> = (props) => {
 			cardType: card.type,
 			selected,
 			className,
+			color: card.color,
+			word: card.word,
 		} as DraggedCardItem,
 		collect: monitor => ({
 			isDragging: monitor.isDragging(),
@@ -96,6 +101,8 @@ const DraggableCard: React.FC<CardProps> = (props) => {
 		preview(getEmptyImage(), { captureDraggingState: true })
 	})
 
+	const isNumberCard = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(card.type)
+
 	return (
 		<div
 			ref={draggableCardRef}
@@ -106,41 +113,38 @@ const DraggableCard: React.FC<CardProps> = (props) => {
 			}}
 			onClick={onClick}
 		>
-			<img
-				key={card.name}
-				className={className}
-				alt={card.name}
-				src={card.src}
-				style={{
-					opacity: (isDragging || (isDraggingAnyCard && isMoreThanOneCardBeingDragged && selected)) ? 0 : 1,
-					filter: !canCardBeUsed ? "brightness(0.5)" : "saturate(1.5)",
-					pointerEvents: canCardBeUsed ? "all" : "none",
-					...(selected ? {
-						border: `${Device.isMobile ? "3px" : "5px"} solid #EC0000`,
-						borderRadius: Device.isMobile ? "8px" : "16px",
-					} : {}),
-				}}
-			/>
-			{card.word && (
-				<div
+			{isNumberCard && card.word ? (
+				<UnoCard
+					color={card.color}
+					type={card.type}
+					word={card.word}
+					className={className}
 					style={{
-						position: "absolute",
-						top: "50%",
-						left: "50%",
-						transform: "translate(-50%, -50%)",
-						fontSize: card.word.length > 5 ? (Device.isMobile ? "14px" : "24px") : (Device.isMobile ? "18px" : "32px"),
-						fontWeight: "bold",
-						color: "#fff",
-						textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
-						pointerEvents: "none",
-						textAlign: "center",
-						maxWidth: "80%",
-						wordWrap: "break-word",
-						lineHeight: card.word.length > 5 ? "1.2" : "1",
+						opacity: (isDragging || (isDraggingAnyCard && isMoreThanOneCardBeingDragged && selected)) ? 0 : 1,
+						filter: !canCardBeUsed ? "brightness(0.5)" : "saturate(1.5)",
+						pointerEvents: canCardBeUsed ? "all" : "none",
+						...(selected ? {
+							border: `${Device.isMobile ? "3px" : "5px"} solid #EC0000`,
+						} : {}),
 					}}
-				>
-					{card.word}
-				</div>
+					alt={card.name}
+				/>
+			) : (
+				<img
+					key={card.name}
+					className={className}
+					alt={card.name}
+					src={card.src}
+					style={{
+						opacity: (isDragging || (isDraggingAnyCard && isMoreThanOneCardBeingDragged && selected)) ? 0 : 1,
+						filter: !canCardBeUsed ? "brightness(0.5)" : "saturate(1.5)",
+						pointerEvents: canCardBeUsed ? "all" : "none",
+						...(selected ? {
+							border: `${Device.isMobile ? "3px" : "5px"} solid #EC0000`,
+							borderRadius: Device.isMobile ? "8px" : "16px",
+						} : {}),
+					}}
+				/>
 			)}
 		</div>
 	)
