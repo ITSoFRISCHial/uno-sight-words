@@ -20,7 +20,7 @@ class Socket {
 	}
 
 	private static setupAdapter (): void {
-		const pubClient = new Redis({
+		const pubClient = redisConfig.url ? new Redis(redisConfig.url) : new Redis({
 			host: redisConfig.host,
 			port: redisConfig.port,
 		})

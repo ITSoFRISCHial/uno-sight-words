@@ -6,11 +6,15 @@ class CacheService {
 	redis: RedisInterface
 
 	constructor () {
-		const redisPort = Number(redisConfig.port)
+		if (redisConfig.url) {
+			this.redis = new Redis(redisConfig.url)
+		} else {
+			const redisPort = Number(redisConfig.port) || 6379
 
-		this.redis = new Redis(redisPort, redisConfig.host, {
-			password: redisConfig.password,
-		})
+			this.redis = new Redis(redisPort, redisConfig.host, {
+				password: redisConfig.password,
+			})
+		}
 	}
 
 	async getKeysByPattern (pattern: string): Promise<string[]> {
