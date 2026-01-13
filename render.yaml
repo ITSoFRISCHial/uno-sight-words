@@ -1,0 +1,59 @@
+services:
+  # API Service
+  - type: web
+    name: uno-sight-words-api
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd packages/unapy && npm install --legacy-peer-deps && npm run build
+    startCommand: cd packages/unapy && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: uno-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: uno-redis
+          property: port
+      - key: REDIS_PASSWORD
+        fromService:
+          type: redis
+          name: uno-redis
+          property: password
+      - key: STATIC_FILES_BASE_URL
+        value: https://uno-sight-words-api.onrender.com/assets
+
+  # Frontend Static Site
+  - type: web
+    name: uno-sight-words-frontend
+    env: static
+    region: oregon
+    plan: free
+    buildCommand: cd packages/unoenty && npm install --legacy-peer-deps && npm run build
+    staticPublishPath: packages/unoenty/build
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: uno-sight-words-api
+          property: hostport
+          envVarKey: API_URL
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+# Redis Database
+databases:
+  - name: uno-redis
+    region: oregon
+    plan: free
+    databaseName: uno
+    user: uno

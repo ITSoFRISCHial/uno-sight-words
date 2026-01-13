@@ -1,5 +1,6 @@
 import { CardData, CardColors, CurrentCardCombo } from "./Card"
 import { PlayerData } from "./Player"
+import { NumberToWordMapping } from "./SightWords"
 
 export type GameEvents =
 "GameStateChanged" |
@@ -56,4 +57,8 @@ export type Game = {
 	currentCardCombo: CurrentCardCombo
 	maxRoundDurationInSeconds: number
 	createdAt: number
+	/**
+	 * Mapping of card numbers (0-9) to sight words for this game session
+	 */
+	numberToWordMapping?: NumberToWordMapping
 }

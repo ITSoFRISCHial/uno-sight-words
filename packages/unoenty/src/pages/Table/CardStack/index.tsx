@@ -135,17 +135,46 @@ const CardStack: React.FC<CardStackProps> = (props) => {
 					className={classes.cardStackContent}
 				>
 					{cards?.slice(0, MAX_CARDS_VISIBLE_ON_CARD_STACK)?.map((card, index) => (
-						<img
+						<div
 							key={card.id}
-							className={classes.card}
-							alt={card.name}
-							src={card.src}
 							style={{
-								transform: `rotate(${index * (-4)}deg)`,
-								zIndex: MAX_CARDS_VISIBLE_ON_CARD_STACK - index,
-								filter: (index === 0) ? "saturate(1.5)" : "contrast(0.5)",
+								position: "relative",
+								display: "inline-block",
 							}}
-						/>
+						>
+							<img
+								className={classes.card}
+								alt={card.name}
+								src={card.src}
+								style={{
+									transform: `rotate(${index * (-4)}deg)`,
+									zIndex: MAX_CARDS_VISIBLE_ON_CARD_STACK - index,
+									filter: (index === 0) ? "saturate(1.5)" : "contrast(0.5)",
+								}}
+							/>
+							{card.word && index === 0 && (
+								<div
+									style={{
+										position: "absolute",
+										top: "50%",
+										left: "50%",
+										transform: "translate(-50%, -50%)",
+										fontSize: card.word.length > 5 ? "20px" : "28px",
+										fontWeight: "bold",
+										color: "#fff",
+										textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+										pointerEvents: "none",
+										textAlign: "center",
+										maxWidth: "80%",
+										wordWrap: "break-word",
+										lineHeight: card.word.length > 5 ? "1.2" : "1",
+										zIndex: MAX_CARDS_VISIBLE_ON_CARD_STACK + 1,
+									}}
+								>
+									{card.word}
+								</div>
+							)}
+						</div>
 					))}
 				</Grid>
 			</Grid>

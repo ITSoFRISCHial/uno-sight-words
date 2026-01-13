@@ -53,26 +53,76 @@ const CustomCardDragPreview: React.FC = () => {
             cardStore?.selectedCards?.every(card => card.type === item.cardType) ? (
 							<>
 								{cardStore?.selectedCards?.map((card, index) => (
-									<img
+									<div
 										key={index}
-										alt={card.name}
-										src={card.src}
-										className={item.className}
 										style={{
-											filter: "saturate(1.5)",
+											position: "relative",
 											left: +index * 20,
-											position: "absolute",
 										}}
-									/>
+									>
+										<img
+											alt={card.name}
+											src={card.src}
+											className={item.className}
+											style={{
+												filter: "saturate(1.5)",
+												position: "absolute",
+											}}
+										/>
+										{card.word && (
+											<div
+												style={{
+													position: "absolute",
+													top: "50%",
+													left: "50%",
+													transform: "translate(-50%, -50%)",
+													fontSize: card.word.length > 5 ? "20px" : "28px",
+													fontWeight: "bold",
+													color: "#fff",
+													textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+													pointerEvents: "none",
+													textAlign: "center",
+													maxWidth: "80%",
+													wordWrap: "break-word",
+													lineHeight: card.word.length > 5 ? "1.2" : "1",
+												}}
+											>
+												{card.word}
+											</div>
+										)}
+									</div>
 								))}
 							</>
 						) : (
-							<img
-								alt={item.name}
-								src={item.src}
-								className={item.className}
-								style={{ filter: "saturate(1.5)" }}
-							/>
+							<div style={{ position: "relative", display: "inline-block" }}>
+								<img
+									alt={item.name}
+									src={item.src}
+									className={item.className}
+									style={{ filter: "saturate(1.5)" }}
+								/>
+								{cardStore?.selectedCards?.find(c => c.id === item.id)?.word && (
+									<div
+										style={{
+											position: "absolute",
+											top: "50%",
+											left: "50%",
+											transform: "translate(-50%, -50%)",
+											fontSize: cardStore?.selectedCards?.find(c => c.id === item.id)?.word.length > 5 ? "20px" : "28px",
+											fontWeight: "bold",
+											color: "#fff",
+											textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+											pointerEvents: "none",
+											textAlign: "center",
+											maxWidth: "80%",
+											wordWrap: "break-word",
+											lineHeight: cardStore?.selectedCards?.find(c => c.id === item.id)?.word.length > 5 ? "1.2" : "1",
+										}}
+									>
+										{cardStore?.selectedCards?.find(c => c.id === item.id)?.word}
+									</div>
+								)}
+							</div>
 						)}
 				</div>
 			</div>

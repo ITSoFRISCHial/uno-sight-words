@@ -97,24 +97,52 @@ const DraggableCard: React.FC<CardProps> = (props) => {
 	})
 
 	return (
-		<img
+		<div
 			ref={draggableCardRef}
-			key={card.name}
-			className={className}
-			alt={card.name}
-			src={card.src}
 			style={{
+				position: "relative",
+				display: "inline-block",
 				...style,
-				opacity: (isDragging || (isDraggingAnyCard && isMoreThanOneCardBeingDragged && selected)) ? 0 : 1,
-				filter: !canCardBeUsed ? "brightness(0.5)" : "saturate(1.5)",
-				pointerEvents: canCardBeUsed ? "all" : "none",
-				...(selected ? {
-					border: `${Device.isMobile ? "3px" : "5px"} solid #EC0000`,
-					borderRadius: Device.isMobile ? "8px" : "16px",
-				} : {}),
 			}}
 			onClick={onClick}
-		/>
+		>
+			<img
+				key={card.name}
+				className={className}
+				alt={card.name}
+				src={card.src}
+				style={{
+					opacity: (isDragging || (isDraggingAnyCard && isMoreThanOneCardBeingDragged && selected)) ? 0 : 1,
+					filter: !canCardBeUsed ? "brightness(0.5)" : "saturate(1.5)",
+					pointerEvents: canCardBeUsed ? "all" : "none",
+					...(selected ? {
+						border: `${Device.isMobile ? "3px" : "5px"} solid #EC0000`,
+						borderRadius: Device.isMobile ? "8px" : "16px",
+					} : {}),
+				}}
+			/>
+			{card.word && (
+				<div
+					style={{
+						position: "absolute",
+						top: "50%",
+						left: "50%",
+						transform: "translate(-50%, -50%)",
+						fontSize: card.word.length > 5 ? (Device.isMobile ? "14px" : "24px") : (Device.isMobile ? "18px" : "32px"),
+						fontWeight: "bold",
+						color: "#fff",
+						textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+						pointerEvents: "none",
+						textAlign: "center",
+						maxWidth: "80%",
+						wordWrap: "break-word",
+						lineHeight: card.word.length > 5 ? "1.2" : "1",
+					}}
+				>
+					{card.word}
+				</div>
+			)}
+		</div>
 	)
 }
 

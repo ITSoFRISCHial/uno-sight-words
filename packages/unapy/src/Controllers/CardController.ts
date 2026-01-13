@@ -3,7 +3,9 @@ import { Request, Response } from "express"
 
 class CardController {
 	async getCardList (req: Request, res: Response) {
-		const cards = await CardService.getCardStack()
+		// Generate a temporary mapping just for getting the card list (used for preloading images)
+		const tempMapping = CardService.generateRandomNumberToWordMapping()
+		const cards = await CardService.getCardStack(tempMapping)
 
 		const cardList = cards.map(card => ({ src: card.src }))
 

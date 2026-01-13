@@ -39,6 +39,10 @@ export type CardData = {
 	canBeCombed?: boolean
 	selectedColor?: CardColors
 	possibleColors?: ColorMap
+	/**
+	 * Sight word assigned to number cards (0-9)
+	 */
+	word?: string
 }
 
 export type CurrentCardCombo = {

@@ -2,7 +2,7 @@ import uuid from "uuid"
 
 import ArrayUtil from "@/Utils/ArrayUtil"
 
-import { CardData, CardTypes, CardColors } from "@uno-game/protocols"
+import { CardData, CardTypes, CardColors, NumberToWordMapping, DOLCH_KINDERGARTEN_SIGHT_WORDS } from "@uno-game/protocols"
 
 import staticFilesConfig from "@/Config/static-files"
 
@@ -30,10 +30,36 @@ class CardService {
 		"yellow",
 	]
 
-	async setupRandomCards (): Promise<CardData[]> {
+	/**
+	 * Generates a random mapping of card numbers (0-9) to sight words
+	 */
+	generateRandomNumberToWordMapping (): NumberToWordMapping {
+		// Shuffle the sight words array and pick the first 10
+		const shuffledWords = [...DOLCH_KINDERGARTEN_SIGHT_WORDS]
+		ArrayUtil.shuffle(shuffledWords)
+		const selectedWords = shuffledWords.slice(0, 10)
+
+		// Map them to numbers 0-9
+		const mapping: NumberToWordMapping = {
+			0: selectedWords[0],
+			1: selectedWords[1],
+			2: selectedWords[2],
+			3: selectedWords[3],
+			4: selectedWords[4],
+			5: selectedWords[5],
+			6: selectedWords[6],
+			7: selectedWords[7],
+			8: selectedWords[8],
+			9: selectedWords[9],
+		}
+
+		return mapping
+	}
+
+	async setupRandomCards (numberToWordMapping: NumberToWordMapping): Promise<CardData[]> {
 		const randomCards: CardData[] = [
-			...await this.getCardStack(),
-			...await this.getCardStack(),
+			...await this.getCardStack(numberToWordMapping),
+			...await this.getCardStack(numberToWordMapping),
 		]
 
 		ArrayUtil.shuffle(randomCards)
@@ -54,21 +80,32 @@ class CardService {
 		return cardColors[0]
 	}
 
-	async getCardStack (): Promise<CardData[]> {
+	async getCardStack (numberToWordMapping: NumberToWordMapping): Promise<CardData[]> {
 		const cardStack: CardData[] = []
+
+		const isNumberCard = (type: CardTypes): type is "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" => {
+			return ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(type)
+		}
 
 		this.cardTypes.map(cardType => {
 			this.cardColors.map(cardColor => {
 				const cardPictureSrc = this.buildCardPictureSrc(cardType, cardColor)
 				const cardId = uuid.v4()
 
-				cardStack.push({
+				const card: CardData = {
 					id: cardId,
 					src: cardPictureSrc,
 					name: `${cardType}-${cardColor}`,
 					color: cardColor,
 					type: cardType,
-				})
+				}
+
+				// Add sight word for number cards
+				if (isNumberCard(cardType)) {
+					card.word = numberToWordMapping[cardType]
+				}
+
+				cardStack.push(card)
 			})
 		})
 

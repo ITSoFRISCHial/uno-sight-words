@@ -42,7 +42,17 @@ import CryptUtil from "@/Utils/CryptUtil"
 
 class GameService {
 	async setupGame (playerId: string, chatId: string): Promise<Game> {
-		const cards = await CardService.setupRandomCards()
+		// Generate random number-to-word mapping for this game session
+		const numberToWordMapping = CardService.generateRandomNumberToWordMapping()
+
+		console.log("=== New Game Word Mapping ===")
+		console.log("Number -> Word assignments for this game:")
+		Object.entries(numberToWordMapping).forEach(([num, word]) => {
+			console.log(`  ${num} -> ${word}`)
+		})
+		console.log("============================")
+
+		const cards = await CardService.setupRandomCards(numberToWordMapping)
 
 		const playerData = await PlayerService.getPlayerData(playerId)
 
@@ -68,6 +78,7 @@ class GameService {
 			},
 			maxRoundDurationInSeconds: environmentConfig.isDev ? 100 : 30,
 			createdAt: Date.now(),
+			numberToWordMapping,
 		}
 
 		await this.setGameData(game.id, game)
@@ -713,19 +724,26 @@ class GameService {
 
 		const playersWithCardUsability = game?.players?.map(player => {
 			if (currentPlayerId === player.id) {
-				const handCards = player?.handCards?.map(handCard => ({
-					...handCard,
-					canBeUsed: game?.currentCardCombo?.cardTypes.length ? (
-						this.cardCanBeBuyCombed(game, handCard)
-					) : (
-						topStackCard?.color === handCard?.color ||
-						handCard?.type === "change-color" ||
-						handCard?.type === "buy-4" ||
-						topStackCard?.type === handCard?.type ||
-						handCard?.color === game.currentGameColor
-					),
-					canBeCombed: game.currentCardCombo.cardTypes.includes(handCard?.type),
-				}))
+				const handCards = player?.handCards?.map(handCard => {
+					// For number cards, check if words match instead of type
+					const isWordMatch = handCard?.word && topStackCard?.word && handCard.word === topStackCard.word
+					const isTypeMatch = topStackCard?.type === handCard?.type
+
+					return {
+						...handCard,
+						canBeUsed: game?.currentCardCombo?.cardTypes.length ? (
+							this.cardCanBeBuyCombed(game, handCard)
+						) : (
+							topStackCard?.color === handCard?.color ||
+							handCard?.type === "change-color" ||
+							handCard?.type === "buy-4" ||
+							isWordMatch ||
+							(!handCard?.word && !topStackCard?.word && isTypeMatch) ||
+							handCard?.color === game.currentGameColor
+						),
+						canBeCombed: game.currentCardCombo.cardTypes.includes(handCard?.type),
+					}
+				})
 
 				return {
 					...player,
@@ -802,7 +820,8 @@ class GameService {
 
 		const winnerInfo = await this.getCurrentPlayerInfo(game)
 
-		const cards = await CardService.setupRandomCards()
+		// Use the same word mapping for the next game
+		const cards = await CardService.setupRandomCards(game.numberToWordMapping)
 
 		game.status = "ended"
 
