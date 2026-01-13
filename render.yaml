@@ -33,11 +33,11 @@ services:
   # Frontend Static Site
   - type: web
     name: uno-sight-words-frontend
-    env: static
+    env: node
     region: oregon
     plan: free
     buildCommand: cd packages/unoenty && npm install --legacy-peer-deps && npm run build
-    staticPublishPath: packages/unoenty/build
+    startCommand: cd packages/unoenty && npm start
     envVars:
       - key: REACT_APP_API_URL
         fromService:
@@ -45,10 +45,6 @@ services:
           name: uno-sight-words-api
           property: hostport
           envVarKey: API_URL
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
 
 # Redis Database
 databases:
