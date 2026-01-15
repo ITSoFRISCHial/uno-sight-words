@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react"
+import React, { createContext, useContext, useState, useEffect, useRef } from "react"
 
 import SocketService from "@/services/socket"
 
@@ -48,6 +48,8 @@ const SocketProvider: React.FC = (props) => {
 	const { children } = props
 
 	const [loading, setLoading] = useState(true)
+	const [loadingMessage, setLoadingMessage] = useState("")
+	const slowConnectionTimerRef = useRef<NodeJS.Timeout | null>(null)
 	const [player, setPlayer] = useState<Player>({} as Player)
 	const [game, setGame] = useState<Game>({} as Game)
 	const [chats, setChats] = useState<Map<string, Chat>>(new Map())
@@ -338,7 +340,18 @@ const SocketProvider: React.FC = (props) => {
 
 		refreshCacheIfNeeded()
 
+		// Start a timer to show "waking up server" message if connection takes too long
+		slowConnectionTimerRef.current = setTimeout(() => {
+			setLoadingMessage("Waking up server... this may take up to a minute")
+		}, 2000)
+
 		const playerData = await SocketService.getPlayerData()
+
+		// Clear the slow connection timer since we connected
+		if (slowConnectionTimerRef.current) {
+			clearTimeout(slowConnectionTimerRef.current)
+			slowConnectionTimerRef.current = null
+		}
 
 		setPlayerData(playerData)
 
@@ -346,6 +359,15 @@ const SocketProvider: React.FC = (props) => {
 			setLoading(false)
 		}, 1000)
 	}
+
+	// Cleanup timer on unmount
+	useEffect(() => {
+		return () => {
+			if (slowConnectionTimerRef.current) {
+				clearTimeout(slowConnectionTimerRef.current)
+			}
+		}
+	}, [])
 
 	const setupListeners = () => {
 		onGameRoundRemainingTimeChanged()
@@ -380,7 +402,7 @@ const SocketProvider: React.FC = (props) => {
 				setChatData,
 			}}
 		>
-			<LoadingScene loading={loading}>
+			<LoadingScene loading={loading} message={loadingMessage}>
 				{children}
 			</LoadingScene>
 		</SocketStore.Provider>

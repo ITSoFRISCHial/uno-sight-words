@@ -4,6 +4,7 @@ import {
 	ThemeProvider,
 	Zoom,
 	Fade,
+	Typography,
 } from "@material-ui/core"
 
 import Node from "@/utils/node"
@@ -21,6 +22,7 @@ type LoadingSceneProps = {
 	onStart?: () => void | (() => Promise<void>)
 	loading?: boolean
 	duration?: number
+	message?: string
 }
 
 type LoadingSceneType = {
@@ -28,7 +30,7 @@ type LoadingSceneType = {
 }
 
 const LoadingScene: LoadingSceneType & React.FC<LoadingSceneProps> = (props) => {
-	const { onFinish, onStart, loading, children, duration } = props
+	const { onFinish, onStart, loading, children, duration, message } = props
 
 	const [visible, setVisible] = useState(true)
 
@@ -67,6 +69,15 @@ const LoadingScene: LoadingSceneType & React.FC<LoadingSceneProps> = (props) => 
 						src={logoImg}
 						alt="logo"
 					/>
+					{message && (
+						<Typography
+							variant="body1"
+							color="textSecondary"
+							className={classes.message}
+						>
+							{message}
+						</Typography>
+					)}
 				</Grid>
 			</Zoom>
 			{children && (

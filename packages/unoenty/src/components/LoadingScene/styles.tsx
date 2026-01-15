@@ -23,6 +23,11 @@ const useStyles = makeStyles((theme) => ({
 			maxWidth: 120,
 		},
 	},
+	message: {
+		marginTop: theme.spacing(2),
+		textAlign: "center",
+		opacity: 0.8,
+	},
 	"@keyframes pulseAnimation": {
 		"0%": {
 			transform: "scale(1)",
