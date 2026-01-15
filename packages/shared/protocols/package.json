@@ -1,5 +1,12 @@
 {
   "name": "@uno-game/protocols",
   "version": "1.0.0",
-  "main": "index.ts"
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  }
 }
