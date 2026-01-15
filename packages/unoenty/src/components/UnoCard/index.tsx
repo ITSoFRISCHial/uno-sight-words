@@ -63,7 +63,9 @@ export const UnoCard: React.FC<UnoCardProps> = ({ color, type, word, className, 
 
 	// For number cards, render custom HTML card with sight word
 	const colorScheme = COLOR_MAP[color] || COLOR_MAP.blue
-	const displayWord = word || type
+	const rawWord = word || type
+	// Convert to title case (first letter uppercase, rest lowercase)
+	const displayWord = rawWord.charAt(0).toUpperCase() + rawWord.slice(1).toLowerCase()
 	const mainFontSize = getMainFontSize(displayWord.length)
 	const cornerFontSize = getCornerFontSize(displayWord.length)
 
@@ -87,6 +89,7 @@ export const UnoCard: React.FC<UnoCardProps> = ({ color, type, word, className, 
 				style={{
 					fontSize: mainFontSize,
 					fontWeight: "bold",
+					fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
 					color: "#ffffff",
 					textAlign: "center",
 					textShadow: "0 2px 8px rgba(0,0,0,0.5)",
@@ -105,6 +108,7 @@ export const UnoCard: React.FC<UnoCardProps> = ({ color, type, word, className, 
 					left: "8px",
 					fontSize: cornerFontSize,
 					fontWeight: "bold",
+					fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
 					color: "#ffffff",
 					textShadow: "0 1px 4px rgba(0,0,0,0.5)",
 					whiteSpace: "nowrap",
@@ -121,6 +125,7 @@ export const UnoCard: React.FC<UnoCardProps> = ({ color, type, word, className, 
 					right: "8px",
 					fontSize: cornerFontSize,
 					fontWeight: "bold",
+					fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
 					color: "#ffffff",
 					textShadow: "0 1px 4px rgba(0,0,0,0.5)",
 					transform: "rotate(180deg)",
